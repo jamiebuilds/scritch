@@ -1,0 +1,9 @@
+{
+  "name": "company-cli",
+  "version": "1.0.0",
+  "description": "Our Company's CLI",
+  "bin": "cli.js",
+  "dependencies": {
+    "scritch": "*"
+  }
+}
