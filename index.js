@@ -58,10 +58,16 @@ async function scritch(dir, opts = {}) {
   let argv = process.argv.slice(2)
 
   // Lookup package for CLI
-  let pkg = readPkgUp.sync({
+  let foundPkg = readPkgUp.sync({
     cwd: parentDir,
     normalize: false,
-  }).pkg || {};
+  })
+
+  let pkg = foundPkg.pkg || {}
+  let pkgPath = foundPkg.path
+
+  let pkgRootPath = path.dirname(pkgPath)
+  let pkgNodeModulesBinPath = path.join(pkgRootPath, 'node_modules', '.bin')
 
   // Extract bin name
   let binName;
@@ -103,6 +109,7 @@ async function scritch(dir, opts = {}) {
     shell: true,
     stdio: 'inherit',
     env: Object.assign({}, process.env, {
+      PATH: `${pkgNodeModulesBinPath}:${scriptsDir}:${process.env.PATH}`,
       SCRITCH_SCRIPT_NAME: script.name,
       SCRITCH_SCRIPT_PATH: script.filePath,
       SCRITCH_SCRIPTS_DIR: scriptsDir,
