@@ -123,7 +123,7 @@ Your `package.json` file should have the following fields:
 
 The simplest usage of scritch is the following `cli.js` file:
 
-```sh
+```js
 #!/usr/bin/env node
 require('scritch')(__dirname)
 ```
