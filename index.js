@@ -4,13 +4,12 @@ let fs = require('fs')
 let meow = require('meow')
 let { promisify } = require('util')
 let executable = require('executable')
-let _crossSpawn = require('cross-spawn')
+let crossSpawn = require('cross-spawn')
 let readPkgUp = require('read-pkg-up')
 let stripIndent = require('strip-indent')
 
 let readdir = promisify(fs.readdir)
 let stat = promisify(fs.stat)
-let crossSpawn = promisify(_crossSpawn)
 
 function isPlainObject(val) {
   return typeof val === 'object' && val !== null && !Array.isArray(val)
@@ -103,18 +102,31 @@ async function scritch(dir, opts = {}) {
     return
   }
 
-  // Spawn matching script
-  await crossSpawn(script.filePath, argv, {
-    cwd: process.cwd(),
-    shell: true,
-    stdio: 'inherit',
-    env: Object.assign({}, process.env, {
-      PATH: `${pkgNodeModulesBinPath}:${scriptsDir}:${process.env.PATH}`,
-      SCRITCH_SCRIPT_NAME: script.name,
-      SCRITCH_SCRIPT_PATH: script.filePath,
-      SCRITCH_SCRIPTS_DIR: scriptsDir,
-    }, env),
-  })
+  return new Promise(async (resolve, reject) => {
+    // Spawn matching script
+    let proc = crossSpawn(script.filePath, argv, {
+      cwd: process.cwd(),
+      shell: true,
+      stdio: 'inherit',
+      env: Object.assign({}, process.env, {
+        PATH: `${pkgNodeModulesBinPath}:${scriptsDir}:${process.env.PATH}`,
+        SCRITCH_SCRIPT_NAME: script.name,
+        SCRITCH_SCRIPT_PATH: script.filePath,
+        SCRITCH_SCRIPTS_DIR: scriptsDir,
+      }, env),
+    })
+
+    proc.on('error', err => {
+      reject(err);
+    });
+
+    proc.on('close', code => {
+      if (code !== 0) {
+        process.exitCode = code;
+      }
+      resolve();
+    });
+  });
 }
 
 module.exports = scritch
