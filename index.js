@@ -55,6 +55,8 @@ async function scritch(dir, opts = {}) {
 
   // Store raw argv
   let argv = process.argv.slice(2)
+  // Store args to pass to script
+  let args = argv.slice(1)
 
   // Lookup package for CLI
   let foundPkg = readPkgUp.sync({
@@ -104,7 +106,7 @@ async function scritch(dir, opts = {}) {
 
   return new Promise(async (resolve, reject) => {
     // Spawn matching script
-    let proc = crossSpawn(script.filePath, argv, {
+    let proc = crossSpawn(script.filePath, args, {
       cwd: process.cwd(),
       shell: true,
       stdio: 'inherit',
