@@ -131,4 +131,9 @@ async function scritch(dir, opts = {}) {
   });
 }
 
-module.exports = scritch
+module.exports = (...args) => {
+  return scritch(...args).catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
+}
