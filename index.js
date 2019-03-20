@@ -10,9 +10,24 @@ let stripIndent = require('strip-indent')
 
 let readdir = promisify(fs.readdir)
 let stat = promisify(fs.stat)
+let lstat = promisify(fs.lstat)
 
 function isPlainObject(val) {
   return typeof val === 'object' && val !== null && !Array.isArray(val)
+}
+
+async function isDirectory(str) {
+  const stat = await lstat(str);
+  return stat.isDirectory();
+}
+
+async function createDirent(str) {
+  const isDir = await isDirectory(str);
+  
+  return {
+    name: path.basename(str),
+    isDirectory: () => isDir,
+  }
 }
 
 // Prevent caching of this module so module.parent is always accurate
@@ -28,6 +43,15 @@ async function scritch(dir, opts = {}) {
 
   // Lookup scripts
   let dirents = await readdir(scriptsDir, { withFileTypes: true })
+  if (dirents.some((d) => typeof d === 'string')) {
+    dirents = await Promise.all(dirents.map(async (str) => {
+      let scriptPath = path.resolve(scriptsDir, str)
+      let dirent = await createDirent(scriptPath)
+
+      return dirent
+    }))
+  }
+
   let scripts = []
 
   for (let dirent of dirents) {

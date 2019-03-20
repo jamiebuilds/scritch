@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-require('scritch')(__dirname, {
+require('../')(__dirname, {
   help: `
     Examples
       Build all files:
