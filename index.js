@@ -7,9 +7,10 @@ let executable = require('executable')
 let crossSpawn = require('cross-spawn')
 let readPkgUp = require('read-pkg-up')
 let stripIndent = require('strip-indent')
+let withFileTypes = require('readdir-withFileTypes');
 
-let readdir = promisify(fs.readdir)
-let stat = promisify(fs.stat)
+
+let readdir = promisify(withFileTypes.readdir)
 
 function isPlainObject(val) {
   return typeof val === 'object' && val !== null && !Array.isArray(val)
@@ -28,6 +29,7 @@ async function scritch(dir, opts = {}) {
 
   // Lookup scripts
   let dirents = await readdir(scriptsDir, { withFileTypes: true })
+
   let scripts = []
 
   for (let dirent of dirents) {
