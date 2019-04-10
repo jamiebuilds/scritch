@@ -7,8 +7,7 @@ let executable = require('executable')
 let crossSpawn = require('cross-spawn')
 let readPkgUp = require('read-pkg-up')
 let stripIndent = require('strip-indent')
-let withFileTypes = require('readdir-withFileTypes');
-
+let withFileTypes = require('readdir-withfiletypes');
 
 let readdir = promisify(withFileTypes.readdir)
 
