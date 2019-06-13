@@ -31,11 +31,11 @@
   "dependencies": {
     "cross-spawn": "^6.0.5",
     "executable": "^4.1.1",
-    "is-ci": "^2.0.0",
     "meow": "^5.0.0",
     "read-pkg-up": "^4.0.0",
     "readdir-withfiletypes": "^1.0.2",
     "strip-ansi-stream": "^1.0.0",
-    "strip-indent": "^2.0.0"
+    "strip-indent": "^2.0.0",
+    "supports-color": "^7.0.0"
   }
 }

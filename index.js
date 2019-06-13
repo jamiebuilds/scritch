@@ -8,7 +8,7 @@ let readPkgUp = require('read-pkg-up')
 let stripIndent = require('strip-indent')
 let withFileTypes = require('readdir-withfiletypes')
 let stripAnsiStream = require('strip-ansi-stream')
-let isCI = require('is-ci')
+let supportsColor = require('supports-color')
 
 let readdir = promisify(withFileTypes.readdir)
 
@@ -120,7 +120,7 @@ async function scritch(dir, opts = {}) {
       }, env),
     })
 
-    if (isCI) {
+    if (!supportsColor.stdout) {
       proc.stdout.pipe(stripAnsiStream()).pipe(process.stdout)
       proc.stderr.pipe(stripAnsiStream()).pipe(process.stderr)
     } else {
