@@ -1,13 +1,14 @@
 'use strict'
 let path = require('path')
-let fs = require('fs')
 let meow = require('meow')
 let { promisify } = require('util')
 let executable = require('executable')
 let crossSpawn = require('cross-spawn')
 let readPkgUp = require('read-pkg-up')
 let stripIndent = require('strip-indent')
-let withFileTypes = require('readdir-withfiletypes');
+let withFileTypes = require('readdir-withfiletypes')
+let stripAnsiStream = require('strip-ansi-stream')
+let isCI = require('is-ci')
 
 let readdir = promisify(withFileTypes.readdir)
 
@@ -110,7 +111,7 @@ async function scritch(dir, opts = {}) {
     let proc = crossSpawn(script.filePath, args, {
       cwd: process.cwd(),
       shell: true,
-      stdio: 'inherit',
+      stdio: ['inherit', 'pipe', 'pipe'],
       env: Object.assign({}, process.env, {
         PATH: `${pkgNodeModulesBinPath}:${scriptsDir}:${process.env.PATH}`,
         SCRITCH_SCRIPT_NAME: script.name,
@@ -118,6 +119,14 @@ async function scritch(dir, opts = {}) {
         SCRITCH_SCRIPTS_DIR: scriptsDir,
       }, env),
     })
+
+    if (isCI) {
+      proc.stdout.pipe(stripAnsiStream()).pipe(process.stdout)
+      proc.stderr.pipe(stripAnsiStream()).pipe(process.stderr)
+    } else {
+      proc.stdout.pipe(process.stdout)
+      proc.stderr.pipe(process.stderr)
+    }
 
     proc.on('error', err => {
       reject(err);

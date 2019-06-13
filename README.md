@@ -6,6 +6,7 @@
 - Share your scripts as a CLI via npm
 - Depend on other CLIs/libraries distributed via npm
 - Injects useful environment variables into your script
+- Strips ANSI escape codes in CI
 
 ## Install
 
