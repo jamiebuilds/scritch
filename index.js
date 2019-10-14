@@ -107,11 +107,13 @@ async function scritch(dir, opts = {}) {
   }
 
   return new Promise(async (resolve, reject) => {
+    let stdoutSupportsColor = supportsColor.stdout;
     // Spawn matching script
     let proc = crossSpawn(script.filePath, args, {
       cwd: process.cwd(),
       shell: true,
-      stdio: ['inherit', 'pipe', 'pipe'],
+      // only pipe if it does not support color as we lose ability to retain color otherwise
+      stdio: !stdoutSupportsColor ? 'pipe' : 'inherit',
       env: Object.assign({}, process.env, {
         PATH: `${pkgNodeModulesBinPath}:${scriptsDir}:${process.env.PATH}`,
         SCRITCH_SCRIPT_NAME: script.name,
@@ -120,12 +122,9 @@ async function scritch(dir, opts = {}) {
       }, env),
     })
 
-    if (!supportsColor.stdout) {
+    if (!stdoutSupportsColor) {
       proc.stdout.pipe(stripAnsiStream()).pipe(process.stdout)
       proc.stderr.pipe(stripAnsiStream()).pipe(process.stderr)
-    } else {
-      proc.stdout.pipe(process.stdout)
-      proc.stderr.pipe(process.stderr)
     }
 
     proc.on('error', err => {
