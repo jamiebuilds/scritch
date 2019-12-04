@@ -2,32 +2,35 @@
   "name": "scritch",
   "version": "1.3.1",
   "description": "A small CLI to help you write sharable scripts for your team",
-  "main": "index.js",
-  "scripts": {
-    "test": "ava"
+  "keywords": [
+    "bash",
+    "bin",
+    "build",
+    "cli",
+    "javascript",
+    "python",
+    "scripting",
+    "scripts",
+    "share",
+    "shell"
+  ],
+  "homepage": "https://github.com/jamiebuilds/scritch#readme",
+  "bugs": {
+    "url": "https://github.com/jamiebuilds/scritch/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jamiebuilds/scritch.git"
   },
-  "keywords": [
-    "build",
-    "scripts",
-    "bash",
-    "shell",
-    "javascript",
-    "python",
-    "scripting",
-    "cli",
-    "bin",
-    "share"
-  ],
-  "author": "Jamie Kyle <me@thejameskyle.com>",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/jamiebuilds/scripts-cli/issues"
+  "author": "Jamie Kyle <me@thejameskyle.com>",
+  "files": [
+    "index.js"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "ava"
   },
-  "homepage": "https://github.com/jamiebuilds/scripts-cli#readme",
   "dependencies": {
     "cross-spawn": "^6.0.5",
     "executable": "^4.1.1",
