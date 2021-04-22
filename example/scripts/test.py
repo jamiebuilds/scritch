@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 import time
+import argparse
+
+# Supports subcommand help messages
+parser = argparse.ArgumentParser(description="Run tests")
+
+args = parser.parse_args()
 
 start = time.time()
 

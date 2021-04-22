@@ -92,7 +92,12 @@ async function scritch(dir, opts = {}) {
     help += stripIndent(helpContent).trimRight()
   }
 
-  let cli = meow({ argv, pkg, help })
+  let cli = meow({ 
+    argv, 
+    pkg, 
+    help,
+    autoHelp: false, 
+  })
 
   // Match script being run
   let scriptName = cli.input[0]
