@@ -16,6 +16,24 @@ function isPlainObject(val) {
   return typeof val === 'object' && val !== null && !Array.isArray(val)
 }
 
+async function readdirRecursive(dir) {
+  const subdirs = await readdir(dir, { withFileTypes: true });
+  const files = await Promise.all(
+    subdirs.map(subdir => {
+      subdir.name = path.resolve(dir, subdir.name);
+      return subdir.isDirectory() ? readdirRecursive(subdir.name) : subdir;
+    })
+  );
+
+  return files
+    .reduce((a, f) => a.concat(f), [])
+    .filter(dirent => {
+      return (
+        !dirent.isDirectory() && !path.basename(dirent.name).startsWith('_')
+      );
+    });
+}
+
 // Prevent caching of this module so module.parent is always accurate
 delete require.cache[__filename];
 let parentDir = path.dirname(module.parent.filename)
@@ -28,24 +46,21 @@ async function scritch(dir, opts = {}) {
   let scriptsDir = path.resolve(dir, scriptsPath)
 
   // Lookup scripts
-  let dirents = await readdir(scriptsDir, { withFileTypes: true })
+  let dirents = (await readdirRecursive(scriptsDir)).filter(
+    dirent => dirent.name !== path.resolve(scriptsDir, 'index.js')
+  );
 
   let scripts = []
 
   for (let dirent of dirents) {
-    // Ignore directories
-    if (dirent.isDirectory()) {
-      continue
-    }
-
-    // Ignore scripts that start with `_` (treated like helpers)
-    if (dirent.name.startsWith('_')) {
-      continue
-    }
-
     // Get base name (without extension) and path of file
-    let name = path.basename(dirent.name, path.extname(dirent.name))
-    let filePath = path.join(scriptsDir, dirent.name)
+    let name = dirent.name
+      .replace(dir, '') // without `scriptsPath`
+      .replace(path.extname(dirent.name), '') // without extension
+      .replace(/^\//, '') // without relative path slash
+      .replace(/\/index$/, '');
+
+    let filePath = dirent.name; // path.join(scriptsDir, dirent.name)
 
     // Ensure file is executable
     if (!await executable(filePath)) {
