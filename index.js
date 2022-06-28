@@ -39,7 +39,7 @@ async function scritch(dir, opts = {}) {
     }
 
     // Ignore scripts that start with `_` (treated like helpers)
-    if (dirent.name.startsWith('_')) {
+    if (dirent.name.startsWith('_') || dirent.name === 'index.js') {
       continue
     }
 
